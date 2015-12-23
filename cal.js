@@ -2,18 +2,21 @@
 
 
 var fillCalendar = function fillCalendar(year, month){
+    //List of month names and the # of days in each month 
     var monthList = [["January",31],["February",28],["March",31],["April",30],["May",31],["June",30],["July",31],["August",31],["September",30],["October",31],["November",30],["December",31]];
-    //^List of month names and the # of days in each month 
 
     var d = new Date(year, month, 1);
     day = d.getDay(); //day of week
     var numDays = monthList[month][1];
     $("#month").text(monthList[month][0] + " " + year);
 
+    //handles leap years
     if (month == 1){
-	//leapyear
-    }      
-   
+	if (new Date(year, 1, 29).getMonth() == 1){
+	    numDays = 29;
+	}
+    }
+    //fills list with correct dates
     dates = [];
     var n = 1 - day;
     for(var j = 0; j<42; j++){
@@ -27,7 +30,7 @@ var fillCalendar = function fillCalendar(year, month){
 	}
 	n++;
     }
-
+    //edits html table
     index = 0;
     $("#cal").each(function(){
 	$(this).find('td').each(function(){
@@ -43,4 +46,4 @@ var fillCalendar = function fillCalendar(year, month){
 	})
     });
 }
-fillCalendar(2015,11);
+fillCalendar(2016,1);
