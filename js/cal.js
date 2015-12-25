@@ -32,18 +32,27 @@ var fillCalendar = function fillCalendar(year, month){
     }
     //edits html table
     index = 0;
-    $("#cal").each(function(){
+    $(".cal").each(function(){
     	$(this).find('td').each(function(){
     	    var d = dates[index];
     	    if ((index <= 7 && d > 20) ||
-    		(index >= 28 && d < 20) ||
-		(index%7 == 0) ||
-		((index+1)%7 == 0)){
+    		(index >= 28 && d < 20)
+		){
+		//get rid of days in previous month
     		$(this).toggleClass("off",true);
-    	    } else {
+    	    } else if (year <= date.getFullYear() &&
+		       month <= date.getMonth()){ 
+		//get rid of days that have passed
+		$(this).toggleClass("off",true);
+		if (month == date.getMonth()){
+		    if( d >= date.getDate()){
+			$(this).toggleClass("off",false);
+		    }
+		}
+	    }else {
     		$(this).toggleClass("off",false);
     	    }
-    	    $(this).text(d);
+    	    $(this).find('a').text(d);
     	    index++;
     	})
     });
@@ -71,4 +80,3 @@ var prevMonth = function(e){
     }
     fillCalendar(currentY, currentM);
 }
-  
