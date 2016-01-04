@@ -40,7 +40,7 @@ var fillCalendar = function fillCalendar(year, month){
 		){
 		//get rid of days in previous month
     		$(this).toggleClass("off",true);
-    	    } else if (year <= date.getFullYear() &&
+    	    } else if (year <= date.getFullYear() ||
 		       month <= date.getMonth()){ 
 		//get rid of days that have passed
 		$(this).toggleClass("off",true);
@@ -80,3 +80,21 @@ var prevMonth = function(e){
     }
     fillCalendar(currentY, currentM);
 }
+
+/****************************Things that we need from backend***********************************************/
+
+
+var availableRooms = function availableRooms(month, day, year){
+    //returns list of available rooms
+}
+
+var unavailableRooms = function unavailableRooms(month, day, year){
+    //returns list of taken rooms
+}
+
+
+
+
+
+
+
