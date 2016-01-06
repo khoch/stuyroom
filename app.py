@@ -12,4 +12,4 @@ def home():
 if __name__ == "__main__":
     app.debug == True
     app.secret_key = "k|5D5PH~21x1.zLg1r.Gj?9v"
-    app.run('0.0.0.0',port=8000)
+    app.run('107.170.107.124',port=8000)
