@@ -33,25 +33,32 @@ var fillCalendar = function fillCalendar(year, month){
     //edits html table
     index = 0;
     $(".cal").each(function(){
+	console.log(month);
     	$(this).find('td').each(function(){
     	    var d = dates[index];
+		//get rid of days in previous month
     	    if ((index <= 7 && d > 20) ||
     		(index >= 28 && d < 20)
 		){
-		//get rid of days in previous month
     		$(this).toggleClass("off",true);
+		//get rid of days that have passed
     	    } else if (year < date.getFullYear()){
 		$(this).toggleClass("off",true);
 	    } else if (month <= date.getMonth() && year == date.getFullYear()){
-		//get rid of days that have passed
 		$(this).toggleClass("off",true);
 		if (month == date.getMonth()){
 		    if( d >= date.getDate()){
 			$(this).toggleClass("off",false);
+			$(this).on("click", function(e){
+			    calEvent(d,month,year);
+			});
 		    }
 		}
 	    }else {
     		$(this).toggleClass("off",false);
+		$(this).on("click", function(e){
+		    calEvent(d,month,year);
+		});
     	    }
     	    $(this).find('a').text(d);
     	    index++;
@@ -63,6 +70,14 @@ var date = new Date();
 currentM = date.getMonth();
 currentY = date.getFullYear();
 fillCalendar(currentY, currentM);
+
+var calEvent = function calEvent(day, month, year){
+    rooms = availableRooms(day, month, year);
+    for (var i = 0; i < rooms.length;i++){
+	$("#availrooms").append('<li>' + rooms[i] + '</li>');
+    }
+    console.log(month);
+}
 
 var nextMonth = function(e){
     currentM++;
