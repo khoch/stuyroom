@@ -39,6 +39,12 @@ var fillCalendar = function fillCalendar(year, month){
 		//get rid of days in previous month
 	    $(this).on("click", function(e){
 		$("#availrooms").empty();
+		$("#unavailrooms").empty();	
+		$(".active").toggleClass('active');
+		$(this).find('a').toggleClass('active');	
+		$(this).toggleClass('active');
+	
+	
 	    });
     	    if ((index <= 7 && thisDay > 20) ||
     		(index >= 28 && thisDay < 20)
@@ -67,12 +73,15 @@ currentY = date.getFullYear();
 fillCalendar(currentY, currentM);
 
 var calEvent = function calEvent(day, month, year){
-    rooms = availableRooms(day, month, year);
-
+    var rooms = availableRooms(day, month, year);
     for (var i = 0; i < rooms.length;i++){
-	$("#availrooms").append('<li>' + rooms[i] + '</li>');
+	$("#availrooms").append('<li><a href="room.html?rm=' + rooms[i]+ '">'
+				+ rooms[i] + '</a></li>');
     }
-    console.log(month);
+    var takenrooms = unavailableRooms(day, month, year);
+    for (var i = 0; i < takenrooms.length; i++){
+	$("#unavailrooms").append('<li>' + takenrooms[i][0] + ' : ' + takenrooms[i][1] + '</li>');
+    }
 }
 
 var nextMonth = function(e){
@@ -105,7 +114,8 @@ var availableRooms = function availableRooms(month, day, year){
 }
 
 var unavailableRooms = function unavailableRooms(month, day, year){
-    //returns list of taken rooms
+    //returns 2D array with taken rooms and club name
+    return [[555, "smash bros"],[555, "jsa"],[555, "key club"],[555,"history club"]]
 }
 
 
