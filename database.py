@@ -1,5 +1,5 @@
-import mysql.connector
-from mysql.connector import errorcode
+import mysql
+
 
 
 cnx = mysql.connector.connect(user='nicholas', password='stuyroom', host='127.0.0.1',
