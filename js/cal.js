@@ -36,16 +36,17 @@ var fillCalendar = function fillCalendar(year, month){
 	console.log(month);
     	$(this).find('td').each(function(){
     	    var thisDay = dates[index];
-		//get rid of days in previous month
-	    $(this).on("click", function(e){
-		$("#availrooms").empty();
-		$("#unavailrooms").empty();	
-		$(".active").toggleClass('active');
-		$(this).find('a').toggleClass('active');	
-		$(this).toggleClass('active');
-	
-	
-	    });
+	    //if not weekend
+	    if (!(index%7 == 0 || (index+1)%7 == 0)){	
+		$(this).on("click", function(e){
+		    $("#availrooms").empty();
+		    $("#unavailrooms").empty();	
+		    $(".active").toggleClass('active');
+		    $(this).find('a').toggleClass('active');	
+		    $(this).toggleClass('active');
+		});
+	    }
+	    //get rid of days in previous month
     	    if ((index <= 7 && thisDay > 20) ||
     		(index >= 28 && thisDay < 20)
 		){
@@ -55,7 +56,7 @@ var fillCalendar = function fillCalendar(year, month){
 		$(this).toggleClass("off",true);
 	    } else if (month < date.getMonth() && year == date.getFullYear()){
 		$(this).toggleClass("off",true);
-	    }else {
+	    } else if (!(index%7 == 0 || (index+1)%7 == 0)){
     		$(this).toggleClass("off",false);
 		$(this).on("click", function(e){
 		   calEvent(thisDay,month,year);
