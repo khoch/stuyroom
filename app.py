@@ -12,6 +12,11 @@ def home():
 def cal():
     return render_template("cal.html")
 
+@application.route('/reserve', methods=['GET','POST'])
+def reserve():
+    return render_template("room.html")
+
+
 @application.route('/test')
 def test():
     return render_template("rotest.html")

@@ -76,7 +76,7 @@ fillCalendar(currentY, currentM);
 var calEvent = function calEvent(day, month, year){
     var rooms = availableRooms(day, month, year);
     for (var i = 0; i < rooms.length;i++){
-	$("#availrooms").append('<li><a href="room.html?rm=' + rooms[i]+ '">'
+	$("#availrooms").append('<li><a href="reserve?rm=' + rooms[i]+ '">'
 				+ rooms[i] + '</a></li>');
     }
     var takenrooms = unavailableRooms(day, month, year);
