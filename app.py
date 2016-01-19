@@ -21,7 +21,7 @@ def reserve():
          room = request.args.get('rm')
          #call db function to store this info
          #return render_template succes message
-         return render_template("room.html")
+    return render_template("room.html")
 
 
 @application.route('/test')
