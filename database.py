@@ -15,8 +15,12 @@ except mysql.connector.Error as err:
   else:
     print(err)
 else:
-  cnx.close()
+  print "connected"
+  cursor = cnx.cursor()
 
+
+def addDate (room, club, clubLeader, email, date):
+    cnx
 
 
 '''
