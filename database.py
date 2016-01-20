@@ -4,17 +4,35 @@ from mysql.connector import errorcode
 
 try:
   cnx = mysql.connector.connect(user='nicholas', password='stuyroom', host='127.0.0.1',
-                                database='testdb')
+                                )
+  cursor = cnx.cursor()
+  cnx.database = "stuyroom"
 except mysql.connector.Error as err:
   if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
     print("Something is wrong with your user name or password")
   elif err.errno == errorcode.ER_BAD_DB_ERROR:
     print("Database does not exist")
+    print("Creating...")
+    createDatabase(cursor)
   else:
     print(err)
 else:
   print "shit works"
-  cnx.close()
+  
+
+def createDB(cursor):
+    try:
+        cursor.execute("CREATE DATABASE stuyroom DEFAULT CHARACTER SET 'utf8'".format(DB_NAME))
+    except mysql.connector.Error as err:
+        print("Failed creating database: {}".format(err))
+        exit(1)
+        
+def createTable ():
+    cursor.execute('CREATE TABLE reservations (roomNum int(3), date date, clubName varchar(10), clubLeader varchar(10), email varchar(10))')
+    print "initialized"
+
+def addReservation():
+  cursor.execute('ADD
 
 
 
