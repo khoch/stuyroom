@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for, escape
+from flask import Flask, render_template, request, session, redirect, url_for, es
 
 
 application = Flask(__name__)
@@ -11,6 +11,18 @@ def home():
 @application.route('/cal')
 def cal():
     return render_template("cal.html")
+
+@application.route('/reserve', methods=['GET','POST'])
+def reserve():
+    if request.method == 'POST':
+         leadername = request.form['name']
+         clubname = request.form['clubname']
+         email = request.form['email']
+         room = request.args.get('rm')
+         #call db function to store this info
+         #return render_template succes message
+    return render_template("room.html")
+
 
 @application.route('/test')
 def test():
