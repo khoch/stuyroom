@@ -7,6 +7,13 @@
 #month {
     padding:0;
 }
+
+.cal {
+    float:left;
+    margin-top:5%;
+    margin-right:5%;
+}
+
 .next{
     float:right;
     padding-left:8%;
@@ -51,4 +58,13 @@
 
 .off a {
     color: #B0B0B0;
+}
+
+.available, .unavailable {
+    margin: 5% 5% 5% 5%;
+    float: left;
+}
+
+.availble ul, .unavailable ul {
+    list-style-type: none;
 }
