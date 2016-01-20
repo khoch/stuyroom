@@ -17,6 +17,7 @@ except mysql.connector.Error as err:
   else:
     print(err)
 else:
+  cursor = cnx.cursor()
   print "shit works"
   
 
@@ -34,6 +35,9 @@ def createTable ():
 def addReservation():
   cursor.execute('ADD
 
+
+def addDate (room, club, clubLeader, email, date):
+    cnx
 
 
 '''
