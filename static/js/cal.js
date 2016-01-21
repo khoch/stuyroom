@@ -75,14 +75,18 @@ fillCalendar(currentY, currentM);
 
 var calEvent = function calEvent(day, month, year){
     var rooms = availableRooms(day, month, year);
+
     for (var i = 0; i < rooms.length;i++){
 	$("#availrooms").append('<li><a href="reserve?rm=' + rooms[i]+ '">'
 				+ rooms[i] + '</a></li>');
     }
+    $(".available").find("span").text("Available");
+
     var takenrooms = unavailableRooms(day, month, year);
     for (var i = 0; i < takenrooms.length; i++){
 	$("#unavailrooms").append('<li>' + takenrooms[i][0] + ' : ' + takenrooms[i][1] + '</li>');
     }
+    $(".unavailable").find("span").text("Unavailable");
 }
 
 var nextMonth = function(e){
