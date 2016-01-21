@@ -45,11 +45,13 @@ var fillCalendar = function fillCalendar(year, month){
 		    $(this).find('a').toggleClass('active');	
 		    $(this).toggleClass('active');
 		});
+	    } else {
+		console.log(index);
 	    }
 	    //get rid of days in previous month
     	    if ((index <= 7 && thisDay > 20) ||
     		(index >= 28 && thisDay < 20)
-		){
+	       ){
     		$(this).toggleClass("off",true);
 		//get rid of days that have passed
     	    } else if (year < date.getFullYear()){
@@ -59,9 +61,11 @@ var fillCalendar = function fillCalendar(year, month){
 	    } else if (!(index%7 == 0 || (index+1)%7 == 0)){
     		$(this).toggleClass("off",false);
 		$(this).on("click", function(e){
-		   calEvent(thisDay,month,year);
+		    calEvent(thisDay,month,year);
 		});
-    	    }
+    	    } else {
+		$(this).toggleClass("off",false);
+	    }
     	    $(this).find('a').text(thisDay);
     	    index++;
     	})

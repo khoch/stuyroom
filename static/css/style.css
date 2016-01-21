@@ -63,8 +63,19 @@
 .available, .unavailable {
     margin: 5% 5% 5% 5%;
     float: left;
+    padding: 0;
 }
 
-.availble ul, .unavailable ul {
+.unavailable ul {
     list-style-type: none;
 }
+
+.available ul {
+    list-style-type: none;
+}
+
+#availrooms, #unavailrooms {
+    padding:0;
+    margin:0;
+}
+
