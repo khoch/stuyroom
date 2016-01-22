@@ -1,36 +1,13 @@
 import mysql.connector
+from operator import sub
+from itertools import imap
 from mysql.connector import errorcode
 
-reservations = 'CREATE TABLE reservations (roomNum int(3), date date, clubName varchar(10), clubLeader varchar(10), email varchar(10))'
-rooms  = 'CREATE TABLE rooms (roomNum int(3))'
-
-
-
-# <-------------- Initialization -------------->
-def createDB(c):
-    try:
-        c.execute("CREATE DATABASE stuyroom DEFAULT CHARACTER SET 'utf8'".format(DB_NAME))
-    except mysql.connector.Error as err:
-        print("Failed creating database: stuyroom".format(err))
-        exit(1)
-        
-def createTables(c):
-    try:
-        print("Creating table reservations, rooms")
-        c.execute(reservations)
-        c.execute(rooms)
-    except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
-            print("already exists.")
-        else:
-            print(err.msg)
-    else:
-        print("Created tables")
-  
+tables = {'reservations':'CREATE TABLE reservations (roomNum int(3), date date, clubName varchar(24), clubLeader varchar(24), email varchar(30))', "rooms" : 'CREATE TABLE rooms (roomNum int(3))', 'users': 'CREATE TABLE users (username varchar(24), password varchar(30))'}
 try:
   cnx = mysql.connector.connect(user='nicholas', password='stuyroom', host='127.0.0.1',
                                 )
-  cursor = cnx.cursor()
+ 
   cnx.database = "stuyroom"
 except mysql.connector.Error as err:
   if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -44,7 +21,35 @@ except mysql.connector.Error as err:
 else:
   print "Databases ready"
 
-createTables(cursor)
+
+# <-------------- Initialization -------------->
+def createDB():
+    cursor = cnx.cursor(buffered=True)
+    try:
+        cursor.execute("CREATE DATABASE stuyroom DEFAULT CHARACTER SET 'utf8'".format(DB_NAME))
+    except mysql.connector.Error as err:
+        print("Failed creating database: stuyroom".format(err))
+        exit(1)
+        
+def createTables():
+    print("Creating table reservations, rooms, users")
+    for key in tables:
+        cursor = cnx.cursor(buffered=True)
+        try:
+            cursor.execute(tables[key])
+        except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
+                print("Tables already exist.")
+                getAll(key)
+            else:
+                print(err.msg)
+        else:
+            print("Created table: " + key)
+        
+    
+  
+
+
 
 
 
@@ -53,20 +58,78 @@ createTables(cursor)
 def addReservation(roomNum, date, clubName, clubLeader, email):
 # Inputs should be sanitized already
 #    print "Adding %s, %s, %s, %s, %s" % (roomNum, date, clubName, clubLeader, email)
+    cursor = cnx.cursor(buffered=True)
     input = 'INSERT INTO reservations VALUES (%s, "%s", "%s", "%s", "%s");' % (roomNum, date, clubName, clubLeader, email)
     print input
     cursor.execute(input)
+    cnx.commit()
 
 def getUnavailableRooms():
-    out = cursor.execute("SELECT roomNum FROM reservations")
-    print out
-    return out
+    cursor = cnx.cursor(buffered=True)
+    cursor.execute("SELECT roomNum FROM reservations;")
+    for roomNum in cursor:
+        print roomNum
+
 
 # <-------------- Testing -------------->
 def testAddReservation():
+    cursor = cnx.cursor(buffered=True)
     addReservation(555, "2015-01-01", "ClubClub", "ClubLeader", "Nick@nicholasyang.com")
     getUnavailableRooms()
 
+
+def execute(n):
+    cursor = cnx.cursor(buffered=True)
+    cursor.execute(n)
+    rows = cursor.fetchall()
+    print rows;
+    cursor.close()
+
+def getAll(key):
+    cursor = cnx.cursor(buffered=True)
+    cursor.execute("SELECT * FROM " + key)
+    if key == "reservations":
+        for (roomNum, date, clubName, clubLeader, email) in cursor:
+            print ("Room {} was reserved on {: %d %b %Y} by {} ({}) of {}".format(roomNum, date, clubLeader, email, clubName))
+    if key == "users":
+        for (username, passwords) in cursor:
+            print ("User: {}".format(username))
+    if key == "rooms":
+        for (rooms) in cursor:
+            print ("Room {}".format(rooms))
+            
+
+# <-------------- Queries -------------->            
+def getRoomsOnDate(date):
+    cursor = cnx.cursor(buffered=True)
+    getRooms = 'SELECT roomNum FROM reservations WHERE date = " ' + date + ' ";'
+    print getRooms
+    cursor.execute(getRooms)
+    return cursor.fetchall()
+
+def getAllRooms():
+    cursor = cnx.cursor(buffered=True)
+    cursor.execute("SELECT * FROM rooms")
+    return cursor.fetchall()
+
+def getAvailableRooms(date):
+    takenRooms = getRoomsOnDate(date)
+    allRooms = getAllRooms()
+    a = []
+    b = []
+    for room in allRooms:
+        a.append(room[0])
+    for room in takenRooms:
+         b.append(room[0])
+    return list(set(a) - set(b))
+  
+
+
+def addRoom(roomNum):
+    cursor = cnx.cursor(buffered=True)
+    cursor.execute("INSERT INTO rooms VALUES (" + str(roomNum) + ");", )
+    cnx.commit()
+        
 '''
 Stores room, club leader name, club name, email, date, (also adds room to taken list)
 
