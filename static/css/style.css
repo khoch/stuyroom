@@ -1,0 +1,81 @@
+#calTitle, #calTitle a {
+    text-align:center;
+    color:black;
+    font-size: 120%;
+}
+
+#month {
+    padding:0;
+}
+
+.cal {
+    float:left;
+    margin-top:5%;
+    margin-right:5%;
+}
+
+.next{
+    float:right;
+    padding-left:8%;
+    padding-right:3;
+}
+.prev {
+    float:left;
+    padding-right:8%;
+    padding-left:3;
+}
+
+.cal a {
+    text-decoration:none;
+}
+
+.cal tr {
+    padding:0;
+}
+.cal td {
+    text-align: center;
+    padding:0;
+}
+.cal td:hover {
+    color: white;
+    background: #E0E0E0;
+    
+}
+
+
+.cal td a {
+    display:block;
+    padding: 1;
+}
+
+.cal td:active, .active{
+    background:#668cff;
+}
+
+.cal a:active, .active{
+    color: white;
+}
+
+.off a {
+    color: #B0B0B0;
+}
+
+.available, .unavailable {
+    margin: 5% 5% 5% 5%;
+    float: left;
+    padding: 0;
+}
+
+.unavailable ul {
+    list-style-type: none;
+}
+
+.available ul {
+    list-style-type: none;
+}
+
+#availrooms, #unavailrooms {
+    padding:0;
+    margin:0;
+}
+
