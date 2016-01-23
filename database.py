@@ -3,11 +3,9 @@ from operator import sub
 from itertools import imap
 from mysql.connector import errorcode
 
-tables = {'reservations':'CREATE TABLE reservations (roomNum int(3), date date, clubName varchar(24), clubLeader varchar(24), email varchar(30))', "rooms" : 'CREATE TABLE rooms (roomNum int(3))', 'users': 'CREATE TABLE users (username varchar(24), password varchar(30))'}
+tables = {'reservations':'CREATE TABLE reservations (roomNum INT(3), date DATE, clubName VARCHAR(64), clubLeader VARCHAR(64), email VARCHAR(64))', "rooms" : 'CREATE TABLE rooms (roomNum INT(3))', 'users': 'CREATE TABLE users (username VARCHAR(64), password VARCHAR(64)), banned BOOLEAN'}
 try:
-  cnx = mysql.connector.connect(user='nicholas', password='stuyroom', host='127.0.0.1',
-                                )
- 
+  cnx = mysql.connector.connect(user='nicholas', password='stuyroom', host='127.0.0.1')
   cnx.database = "stuyroom"
 except mysql.connector.Error as err:
   if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -23,10 +21,12 @@ else:
 
 
 # <-------------- Initialization -------------->
+
 def createDB():
+
     cursor = cnx.cursor(buffered=True)
     try:
-        cursor.execute("CREATE DATABASE stuyroom DEFAULT CHARACTER SET 'utf8'".format(DB_NAME))
+        cursor.execute("CREATE DATABASE stuyroom DEFAULT CHARACTER SET 'utf8'")
     except mysql.connector.Error as err:
         print("Failed creating database: stuyroom".format(err))
         exit(1)
@@ -49,41 +49,29 @@ def createTables():
     
   
 
-
-
-
-
-# <-------------- Reservations -------------->
-# roomNum, date, clubName, clubLeader, email 
-def addReservation(roomNum, date, clubName, clubLeader, email):
-# Inputs should be sanitized already
-#    print "Adding %s, %s, %s, %s, %s" % (roomNum, date, clubName, clubLeader, email)
-    cursor = cnx.cursor(buffered=True)
-    input = 'INSERT INTO reservations VALUES (%s, "%s", "%s", "%s", "%s");' % (roomNum, date, clubName, clubLeader, email)
-    print input
-    cursor.execute(input)
-    cnx.commit()
-
-def getUnavailableRooms():
-    cursor = cnx.cursor(buffered=True)
-    cursor.execute("SELECT roomNum FROM reservations;")
-    for roomNum in cursor:
-        print roomNum
-
-
 # <-------------- Testing -------------->
+
 def testAddReservation():
     cursor = cnx.cursor(buffered=True)
     addReservation(555, "2015-01-01", "ClubClub", "ClubLeader", "Nick@nicholasyang.com")
-    getUnavailableRooms()
+    return getAllReservedRooms()
+
+def getAllReservedRooms():
+    cursor = cnx.cursor(buffered=True)
+    cursor.execute("SELECT roomNum FROM reservations")
+    return cursor.findall()
 
 
-def execute(n):
+def get(n):
     cursor = cnx.cursor(buffered=True)
     cursor.execute(n)
     rows = cursor.fetchall()
     print rows;
     cursor.close()
+
+def set(n):
+    cursor = cnx.cursor(buffered=True)
+    cursor.execute(n)
 
 def getAll(key):
     cursor = cnx.cursor(buffered=True)
@@ -97,38 +85,91 @@ def getAll(key):
     if key == "rooms":
         for (rooms) in cursor:
             print ("Room {}".format(rooms))
-            
 
-# <-------------- Queries -------------->            
-def getRoomsOnDate(date):
+
+
+# <---------------------------- Reservations ---------------------------->
+
+
+
+# <-------------- Insertion -------------->
+
+# roomNum, date, clubName, clubLeader, email 
+def addReservation(roomNum, date, clubName, clubLeader, email):
+#    Inputs should be sanitized already
+#    print "Adding %s, %s, %s, %s, %s" % (roomNum, date, clubName, clubLeader, email)
     cursor = cnx.cursor(buffered=True)
-    getRooms = 'SELECT roomNum FROM reservations WHERE date = " ' + date + ' ";'
+    input = 'INSERT INTO reservations VALUES ({}, "{}", "{}", "{}", "{}");'.format(roomNum, date, clubName, clubLeader, email)
+    print input
+    cursor.execute(input)
+    cnx.commit()
+
+# <-------------- Insertion -------------->
+def getReservationChron():
+# This is gonna be a list of tuples. Tuples suck, I know, but they can hold multiple types and are really useful
+    cursor = cnx.cursor(buffered=True)
+    cursor.execute("SELECT * FROM reservations ORDER BY date ASC;")
+    return cursor.fetchall()
+
+
+
+
+
+# <---------------------------- Rooms ---------------------------->
+
+
+     
+
+# <-------------- Queries -------------->
+           
+def getTakenRooms(date):
+    # Gets rooms taken on a given date. Converts tuple to list
+    cursor = cnx.cursor(buffered=True)
+    getRooms = 'SELECT roomNum FROM reservations WHERE date = "{}";'.format(date)
     print getRooms
     cursor.execute(getRooms)
-    return cursor.fetchall()
+    rooms = cursor.fetchall()
+    out = []
+    for room in rooms:
+        out.append(room[0])
+    return out
 
 def getAllRooms():
     cursor = cnx.cursor(buffered=True)
     cursor.execute("SELECT * FROM rooms")
-    return cursor.fetchall()
+    rooms = cursor.fetchall()
+    out = []
+    for room in rooms:
+        out.append(room[0])
+    return out
 
 def getAvailableRooms(date):
     takenRooms = getRoomsOnDate(date)
     allRooms = getAllRooms()
-    a = []
-    b = []
-    for room in allRooms:
-        a.append(room[0])
-    for room in takenRooms:
-         b.append(room[0])
     return list(set(a) - set(b))
-  
 
+
+# <---------------------------- Rooms ---------------------------->
+
+ 
+# <-------------- Insertion -------------->            
 
 def addRoom(roomNum):
     cursor = cnx.cursor(buffered=True)
-    cursor.execute("INSERT INTO rooms VALUES (" + str(roomNum) + ");", )
+    cursor.execute("INSERT INTO rooms VALUES ( {} );".format(roomNum))
     cnx.commit()
+
+
+def addUser(username, password):
+    # Everything should be hashed by now
+    cursor = cnx.cursor(buffered=True)
+    cursor.execute('INSERT INTO users VALUES ( "{}", "{}");'.format(username, password))
+
+
+# <---------------------------- Misc ---------------------------->
+
+
+        
         
 '''
 Stores room, club leader name, club name, email, date, (also adds room to taken list)
