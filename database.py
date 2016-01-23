@@ -133,7 +133,6 @@ def getTakenRooms(date):
     for room in rooms:
         room = list(room)
         out.append(room)
-    # print rooms
     return out
 
 def getAllRooms():
@@ -153,7 +152,7 @@ def getAvailableRooms(date):
     return list(set(a) - set(b))
 
 
-# <---------------------------- Rooms ---------------------------->
+
 
  
 # <-------------- Insertion -------------->            
@@ -164,11 +163,33 @@ def addRoom(roomNum):
     cursor.execute("INSERT INTO rooms VALUES ( {} );".format(roomNum))
     cnx.commit()
 
+# <---------------------------- Users ---------------------------->
 
 def addUser(username, password):
     # Everything should be hashed by now
     cursor = cnx.cursor(buffered=True)
     cursor.execute('INSERT INTO users VALUES ( "{}", "{}");'.format(username, password))
+
+def checkUser(username, password):
+    # returns 0 if user exists with correct password, 1 if the password is wrong and 2 if they do not exist
+    cursor = cnx.cursor(buffered=True)
+    if userExists(username):
+        cursor.execute('SELECT count(1) FROM users WHERE username = "{}" AND password ="{}"'.format(username, password))
+        result = cursor.fetchone()
+        if (result[0] == 1):
+            return 0
+        else:
+            return 1
+    return 2
+
+def userExists(username):
+    # returns false if user does not exist, true if they do
+    cursor = cnx.cursor(buffered=True)
+    cursor.execute('SELECT count(1) FROM users WHERE username="{}"'.format(username))
+    result = cursor.fetchone()
+    if result[0] == 0:
+        return False
+    return True
 
 
 # <---------------------------- Misc ---------------------------->
