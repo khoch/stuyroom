@@ -125,16 +125,19 @@ def getReservationChron():
 def getTakenRooms(date):
     # Gets rooms taken on a given date. Converts tuple to list
     cursor = cnx.cursor(buffered=True)
-    getRooms = 'SELECT roomNum FROM reservations WHERE date = "{}";'.format(date)
-    print getRooms
+    getRooms = 'SELECT roomNum, clubName FROM reservations WHERE date = "{}";'.format(date)
     cursor.execute(getRooms)
     rooms = cursor.fetchall()
+    # Don't know why I can't edit rooms to have lists instead of tuples, but I guess this works
     out = []
     for room in rooms:
-        out.append(room[0])
+        room = list(room)
+        out.append(room)
+    # print rooms
     return out
 
 def getAllRooms():
+    # Gets all the rooms, puts them into a simple list
     cursor = cnx.cursor(buffered=True)
     cursor.execute("SELECT * FROM rooms")
     rooms = cursor.fetchall()
@@ -144,7 +147,8 @@ def getAllRooms():
     return out
 
 def getAvailableRooms(date):
-    takenRooms = getRoomsOnDate(date)
+    # Subtracts the rooms taken from the total rooms
+    takenRooms = getTakenRooms(date)
     allRooms = getAllRooms()
     return list(set(a) - set(b))
 
@@ -155,6 +159,7 @@ def getAvailableRooms(date):
 # <-------------- Insertion -------------->            
 
 def addRoom(roomNum):
+    # Adds a room, pretty self explainatory 
     cursor = cnx.cursor(buffered=True)
     cursor.execute("INSERT INTO rooms VALUES ( {} );".format(roomNum))
     cnx.commit()
