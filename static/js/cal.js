@@ -75,15 +75,16 @@ currentY = date.getFullYear();
 fillCalendar(currentY, currentM);
 
 var calEvent = function calEvent(day, month, year){
-    var rooms = availableRooms(day, month, year);
     var datestring = year + "-" + month + "-" + day;
+
+    var rooms = availableRooms(datestring);
     for (var i = 0; i < rooms.length;i++){
 	$("#availrooms").append('<li><a href="reserve?rm=' + rooms[i]+ '&date=' + datestring+'">'
 				+ rooms[i]  + '</a></li>');
     }
     $(".available").find("span").text("Available");
     
-    var takenrooms = unavailableRooms(day, month, year);
+    var takenrooms = unavailableRooms(datestring);
     for (var i = 0; i < takenrooms.length; i++){
 	$("#unavailrooms").append('<li>' + takenrooms[i][0] + ' : ' + takenrooms[i][1] + '</li>');
     }
@@ -113,18 +114,18 @@ var prevMonth = function(e){
 /****************************Things that we need from backend***********************************************/
 
 
-var availableRooms = function availableRooms(month, day, year){
+var availableRooms = function availableRooms(datestring){
     //returns list of available rooms
-    var datestring = year + "-" + month + "-" + day;
+    console.log(datestring);
     var rms;
     //using sync request because this data is basically needed for the site to serve its purpose
     $.ajax({
 	url: "/available",
+	type: 'GET',
 	dataType: 'json',
 	async: false,
 	data: {date: datestring},
 	success: function(d){
-	    console.log(d);
 	    rms = d;
 	},
 	error: function(error){
@@ -138,18 +139,18 @@ var availableRooms = function availableRooms(month, day, year){
 
 
 
-var unavailableRooms = function unavailableRooms(month, day, year){
+var unavailableRooms = function unavailableRooms(datestring){
     //returns 2d list of unavailable rooms + club using it
-    var datestring = year + "-" + month + "-" + day;
+    console.log(datestring);
     var takenrms;
     //using sync request because too lazy not to
     $.ajax({
 	url: "/taken",
+	type: 'GET',
 	dataType: 'json',
 	async: false,
 	data: {date: datestring},
 	success: function(d){
-	    console.log(d);
 	    takenrms = d;
 	},
 	error: function(error){
