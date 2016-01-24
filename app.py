@@ -5,9 +5,6 @@ application = Flask(__name__)
 
 @application.route('/')
 @application.route('/home')
-def home():
-	return render_template("home.html")
-
 @application.route('/cal')
 def cal():
     return render_template("cal.html")
