@@ -33,7 +33,6 @@ var fillCalendar = function fillCalendar(year, month){
     //edits html table
     index = 0;
     $(".cal").each(function(){
-	console.log(month);
     	$(this).find('td').each(function(){
     	    var thisDay = dates[index];
 	    //if not weekend
@@ -45,8 +44,6 @@ var fillCalendar = function fillCalendar(year, month){
 		    $(this).find('a').toggleClass('active');	
 		    $(this).toggleClass('active');
 		});
-	    } else {
-		console.log(index);
 	    }
 	    //get rid of days in previous month
     	    if ((index <= 7 && thisDay > 20) ||
@@ -79,13 +76,13 @@ fillCalendar(currentY, currentM);
 
 var calEvent = function calEvent(day, month, year){
     var rooms = availableRooms(day, month, year);
-
+    var datestring = year + "-" + month + "-" + day;
     for (var i = 0; i < rooms.length;i++){
-	$("#availrooms").append('<li><a href="reserve?rm=' + rooms[i]+ '">'
-				+ rooms[i] + '</a></li>');
+	$("#availrooms").append('<li><a href="reserve?rm=' + rooms[i]+ '&date=' + datestring+'">'
+				+ rooms[i]  + '</a></li>');
     }
     $(".available").find("span").text("Available");
-
+    
     var takenrooms = unavailableRooms(day, month, year);
     for (var i = 0; i < takenrooms.length; i++){
 	$("#unavailrooms").append('<li>' + takenrooms[i][0] + ' : ' + takenrooms[i][1] + '</li>');
@@ -118,13 +115,42 @@ var prevMonth = function(e){
 
 var availableRooms = function availableRooms(month, day, year){
     //returns list of available rooms
-    
-    return [229,231,303,313,315,327,329,333,335,337,339,403,404,405,407,427,437,431] //just for now
+    var datestring = year + "-" + month + "-" + day;
+    var rms;
+    //using sync request because this data is basically needed for the site to serve its purpose
+    $.ajax({
+	url: "/available",
+	dataType: 'json',
+	async: false,
+	data: datestring,
+	success: function(d){
+	    rms = d;
+	}
+    });
+    return rms;
+
 }
 
+
+
+
 var unavailableRooms = function unavailableRooms(month, day, year){
-    //returns 2D array with taken rooms and club name
-    return [[555, "smash bros"],[555, "jsa"],[555, "key club"],[555,"history club"]]
+    //returns 2d list of unavailable rooms + club using it
+    var datestring = year + "-" + month + "-" + day;
+    var takenrms;
+    //using sync request because too lazy not to
+    $.ajax({
+	url: "/taken",
+	dataType: 'json',
+	async: false,
+	data: datestring,
+	success: function(d){
+	    takenrms = d;
+	}
+    });
+    console.log(takenrms);
+    return takenrms;
+
 }
 
 
