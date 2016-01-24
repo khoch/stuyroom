@@ -90,6 +90,15 @@ def getAll(key):
 
 # <---------------------------- Reservations ---------------------------->
 
+# <-------------- Queries -------------->
+def getReservationChron():
+# This is gonna be a list of tuples. Tuples suck, I know, but they can hold multiple types and are really useful
+    cursor = cnx.cursor(buffered=True)
+    cursor.execute("SELECT * FROM reservations ORDER BY date ASC;")
+    return cursor.fetchall()
+
+
+
 
 
 # <-------------- Insertion -------------->
@@ -105,18 +114,12 @@ def addReservation(roomNum, date, clubName, clubLeader, email):
     cnx.commit()
 
 # <-------------- Insertion -------------->
-def getReservationChron():
-# This is gonna be a list of tuples. Tuples suck, I know, but they can hold multiple types and are really useful
+
+def deleteReservation(date, room):
     cursor = cnx.cursor(buffered=True)
-    cursor.execute("SELECT * FROM reservations ORDER BY date ASC;")
-    return cursor.fetchall()
-
-
-
-
+    cursor.execute('DELETE FROM reservations WHERE date = "{}" AND room = "{}"'.format(date, room))
 
 # <---------------------------- Rooms ---------------------------->
-
 
      
 
@@ -152,9 +155,6 @@ def getAvailableRooms(date):
     return list(set(a) - set(b))
 
 
-
-
- 
 # <-------------- Insertion -------------->            
 
 def addRoom(roomNum):
@@ -194,7 +194,10 @@ def userExists(username):
 
 # <---------------------------- Misc ---------------------------->
 
-
+def importRooms(fileName):
+    rooms = open(fileName, "r")
+    for room in rooms:
+        addRoom(int(room))
         
         
 '''
