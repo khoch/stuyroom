@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 import json
-import database
+#import database
 
 application = Flask(__name__)
 
@@ -18,7 +18,7 @@ def reserve():
          email = request.form['email']
          room = request.args.get('rm')
          date = request.args.get('date')
-         database.addReservation(room, date, clubname, leadername, email)
+         #database.addReservation(room, date, clubname, leadername, email)
          return redirect(url_for('cal'))
     return render_template("room.html")
 
@@ -30,8 +30,8 @@ def test():
 @application.route('/taken')
 def taken():
         if request.method == 'GET':
-                data = database.getTakenRooms(date)
-                #data = [[555, "smash bros"],[555, "jsa"],[555, "key club"],[555,"history club"]]
+                #data = database.getTakenRooms(date)
+                data = [[555, "smash bros"],[555, "jsa"],[555, "key club"],[555,"history club"]]
         return json.dumps(data)
 
 @application.route('/available')
@@ -39,8 +39,8 @@ def available():
         data = []
         if request.method == 'GET':
                 date = request.args.get("date");
-                data = database.getAvailableRooms(date)
-                #data = [229,231,303,313,315,327,329,333,335,337,339,403,404,405,407,427,437,431]
+                #data = database.getAvailableRooms(date)
+                data = [229,231,303,313,315,327,329,333,335,337,339,403,404,405,407,427,437,431]
         return json.dumps(data)
 
 if __name__ == "__main__":
