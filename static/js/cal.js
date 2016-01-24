@@ -122,9 +122,13 @@ var availableRooms = function availableRooms(month, day, year){
 	url: "/available",
 	dataType: 'json',
 	async: false,
-	data: datestring,
+	data: {date: datestring},
 	success: function(d){
+	    console.log(d);
 	    rms = d;
+	},
+	error: function(error){
+	    console.log(error);
 	}
     });
     return rms;
@@ -143,12 +147,16 @@ var unavailableRooms = function unavailableRooms(month, day, year){
 	url: "/taken",
 	dataType: 'json',
 	async: false,
-	data: datestring,
+	data: {date: datestring},
 	success: function(d){
+	    console.log(d);
 	    takenrms = d;
+	},
+	error: function(error){
+	    console.log(error);
 	}
+
     });
-    console.log(takenrms);
     return takenrms;
 
 }
