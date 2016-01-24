@@ -1,15 +1,11 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 import sqlite3
 import csv
-from login import Login
+from account_utils import Login, ChangePass
 
 app = Flask(__name__)
 
 @app.route("/", methods=["GET","POST"])
-
-@app.route("/home", methods=["GET","POST"])
-def home():
-	return render_template("home.html")
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -20,13 +16,37 @@ def login():
     else:
         uname = request.form['user']
         passw = request.form['pass']
-        button = request.form['button']
+        #button = request.form['button']
         if Login(uname, passw):
             session["loggedin"] = True
             session['user'] = uname
             return redirect(url_for("home"))
         else:
             return render_template("login.html", NOTLOGGEDIN = "Error: Wrong username or password.")  
+
+@app.route("/changepass", methods=['GET', 'POST'])
+def changepass():
+    if "loggedin" not in session:
+        session["loggedin"] = False
+    if request.method=="GET":
+        return render_template("changepass.html")
+    else:
+        uname = request.form['user']
+        oldpassw = request.form['oldpass']
+        newpassw1 = request.form['newpass1']
+        newpassw2 = request.form['newpass2']
+        #button = request.form['button']
+        if Login(uname, oldpassw):
+            if newpassw1 != newpassw2:
+                return render_template("changepass.html", ERROR = "Error: New passwords do not match.") 
+            ChangePass(uname, newpassw1)
+            return redirect(url_for("login"))
+        else:
+            return render_template("changepass.html", ERROR = "Error: Wrong username or password.")  
+
+@app.route("/home", methods=["GET","POST"])
+def home():
+	return render_template("home.html")
 
 @app.route("/logout")
 def logout():
@@ -45,7 +65,7 @@ def signup():
         else: 
             uname = request.form['user']
             passw = request.form['pass']
-            button = request.form['button']			
+            #button = request.form['button']			
             if Register.Register(uname, passw):
                 return redirect(url_for("login"))
             else:
