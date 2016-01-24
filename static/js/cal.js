@@ -30,11 +30,15 @@ var fillCalendar = function fillCalendar(year, month){
     	}
     	n++;
     }
+
     //edits html table
     index = 0;
     $(".cal").each(function(){
     	$(this).find('td').each(function(){
-    	    var thisDay = dates[index];
+    	    var thisDay = new Number();
+	    thisDay = dates[index];
+	    var datestring = new String();
+	    datestring = year + "-" + month + "-" + thisDay;
 	    //if not weekend
 	    if (!(index%7 == 0 || (index+1)%7 == 0)){	
 		$(this).on("click", function(e){
@@ -58,7 +62,8 @@ var fillCalendar = function fillCalendar(year, month){
 	    } else if (!(index%7 == 0 || (index+1)%7 == 0)){
     		$(this).toggleClass("off",false);
 		$(this).on("click", function(e){
-		    calEvent(thisDay,month,year);
+
+		    calEvent(datestring);
 		});
     	    } else {
 		$(this).toggleClass("off",false);
@@ -74,17 +79,15 @@ currentM = date.getMonth();
 currentY = date.getFullYear();
 fillCalendar(currentY, currentM);
 
-var calEvent = function calEvent(day, month, year){
-    var datestring = year + "-" + month + "-" + day;
-
-    var rooms = availableRooms(datestring);
+var calEvent = function calEvent(dateString){
+    var rooms = availableRooms(dateString);
     for (var i = 0; i < rooms.length;i++){
-	$("#availrooms").append('<li><a href="reserve?rm=' + rooms[i]+ '&date=' + datestring+'">'
+	$("#availrooms").append('<li><a href="reserve?rm=' + rooms[i]+ '&date=' + dateString+'">'
 				+ rooms[i]  + '</a></li>');
     }
     $(".available").find("span").text("Available");
     
-    var takenrooms = unavailableRooms(datestring);
+    var takenrooms = unavailableRooms(dateString);
     for (var i = 0; i < takenrooms.length; i++){
 	$("#unavailrooms").append('<li>' + takenrooms[i][0] + ' : ' + takenrooms[i][1] + '</li>');
     }
@@ -114,9 +117,9 @@ var prevMonth = function(e){
 /****************************Things that we need from backend***********************************************/
 
 
-var availableRooms = function availableRooms(datestring){
+var availableRooms = function availableRooms(dstring){
     //returns list of available rooms
-    console.log(datestring);
+    console.log("!" + dstring);
     var rms;
     //using sync request because this data is basically needed for the site to serve its purpose
     $.ajax({
@@ -124,7 +127,7 @@ var availableRooms = function availableRooms(datestring){
 	type: 'GET',
 	dataType: 'json',
 	async: false,
-	data: {date: datestring},
+	data: {date: dstring},
 	success: function(d){
 	    rms = d;
 	},
@@ -132,6 +135,7 @@ var availableRooms = function availableRooms(datestring){
 	    console.log(error);
 	}
     });
+    //rms = [123,23,424,242,25];
     return rms;
 
 }
@@ -139,9 +143,9 @@ var availableRooms = function availableRooms(datestring){
 
 
 
-var unavailableRooms = function unavailableRooms(datestring){
+var unavailableRooms = function unavailableRooms(dstring){
     //returns 2d list of unavailable rooms + club using it
-    console.log(datestring);
+
     var takenrms;
     //using sync request because too lazy not to
     $.ajax({
@@ -149,7 +153,7 @@ var unavailableRooms = function unavailableRooms(datestring){
 	type: 'GET',
 	dataType: 'json',
 	async: false,
-	data: {date: datestring},
+	data: {date: dstring},
 	success: function(d){
 	    takenrms = d;
 	},
@@ -158,6 +162,7 @@ var unavailableRooms = function unavailableRooms(datestring){
 	}
 
     });
+    //takenrms = [[214,"214"],[214,"214"],[214,"214"],[214,"214"]]
     return takenrms;
 
 }

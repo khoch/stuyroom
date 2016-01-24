@@ -41,8 +41,6 @@ def available():
     if request.method == 'GET':
         date = request.args.get("date");
         data = database.getAvailableRooms(date)
-        #data = database.getAllRooms()
-        #    data = [229,231,303,313,315,327,329,333,335,337,339,403,404,405,407,427,437,431]
     return json.dumps(data)
 
 if __name__ == "__main__":
