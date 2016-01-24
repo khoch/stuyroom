@@ -7,10 +7,6 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET","POST"])
 
-@app.route("/home", methods=["GET","POST"])
-def home():
-	return render_template("home.html")
-
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if "loggedin" not in session:
@@ -28,8 +24,8 @@ def login():
         else:
             return render_template("login.html", NOTLOGGEDIN = "Error: Wrong username or password.")  
 
-@app.route("/login", methods=['GET', 'POST'])
-def login():
+@app.route("/changepass", methods=['GET', 'POST'])
+def changepass():
     if "loggedin" not in session:
         session["loggedin"] = False
     if request.method=="GET":
@@ -47,6 +43,10 @@ def login():
             return redirect(url_for("login"))
         else:
             return render_template("changepass.html", NOTLOGGEDIN = "Error: Wrong username or password.")  
+
+@app.route("/home", methods=["GET","POST"])
+def home():
+	return render_template("home.html")
 
 @app.route("/logout")
 def logout():
