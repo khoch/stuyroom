@@ -31,7 +31,7 @@ def createDB():
     except mysql.connector.Error as err:
         print("Failed creating database: stuyroom".format(err))
         exit(1)
-    #cursor.close()
+    cursor.close()
         
 def createTables():
     print("Creating table reservations, rooms, users")
@@ -47,7 +47,8 @@ def createTables():
                 print(err.msg)
         else:
             print("Created table: " + key)
-    #cursor.close()
+    importRooms("rooms.txt")
+    cursor.close()
     
 def reloadTables():
     cursor = cnx.cursor(buffered=True)
@@ -109,7 +110,7 @@ def getReservationChron():
     cursor = cnx.cursor(buffered=True)
     cursor.execute("SELECT * FROM reservations ORDER BY date ASC;")
     output = cursor.fetchall()
-    #cursor.close()
+    cursor.close()
     return output
 
 
@@ -124,7 +125,7 @@ def addReservation(roomNum, date, clubName, clubLeader, email):
     input = 'INSERT INTO reservations VALUES ({}, "{}", "{}", "{}", "{}");'.format(roomNum, date, clubName, clubLeader, email)
     print input
     cursor.execute(input)
-    #cursor.close()
+    cursor.close()
     cnx.commit()
 
 # <-------------- Deletion -------------->
@@ -132,7 +133,7 @@ def addReservation(roomNum, date, clubName, clubLeader, email):
 def deleteReservation(date, room):
     cursor = cnx.cursor(buffered=True)
     cursor.execute('DELETE FROM reservations WHERE date = "{}" AND room = "{}"'.format(date, room))
-    #cursor.close()
+    cursor.close()
 
 # <---------------------------- Rooms ---------------------------->
 
@@ -151,7 +152,7 @@ def getTakenRooms(date):
     for room in rooms:
         room = list(room)
         out.append(room)
-    #cursor.close()
+    cursor.close()
     return out
 
 def getAllRooms():
@@ -162,7 +163,7 @@ def getAllRooms():
     out = []
     for room in rooms:
         out.append(room[0])
-    #cursor.close()
+    cursor.close()
     return out
 
 def getAvailableRooms(date):
@@ -177,12 +178,12 @@ def getAvailableRooms(date):
         out.append(room[0])
     return out
 
-'''
+"""
 def getAvailableRooms(date):
     takenRooms = getTakenRooms(date)
     allRooms = getAllRooms()
     return list(set(a) - set(b))
-'''
+"""
 
 # <-------------- Insertion -------------->            
 
@@ -191,12 +192,14 @@ def addRoom(roomNum):
     cursor = cnx.cursor(buffered=True)
     cursor.execute("INSERT INTO rooms VALUES ( {} );".format(roomNum))
     cnx.commit()
-    #cursor.close()
+    cursor.close()
 
 # <---------------------------- Users ---------------------------->
 
 def addUser(username, password):
     # Everything should be hashed by now
+    if userExists(username):
+        print "Error, user already exists"
     cursor = cnx.cursor(buffered=True)
     cursor.execute('INSERT INTO users VALUES ( "{}", "{}");'.format(username, password))
     cnx.commit()
