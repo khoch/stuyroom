@@ -24,7 +24,7 @@ def Login(username, password):
 def ChangePass(username, newpassword):
     conn = sqlite3.connect("accounts.db")
     c = conn.cursor()
-    hash = pbkdf2_sha256.encrypt(password, rounds=20000, salt_size=16)
+    hash = pbkdf2_sha256.encrypt(newpassword, rounds=20000, salt_size=16)
     c.execute('UPDATE users SET pass=? WHERE user=?', (hash, username))
     conn.commit()
 

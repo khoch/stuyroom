@@ -42,7 +42,7 @@ def changepass():
             ChangePass(uname, newpassw1)
             return redirect(url_for("login"))
         else:
-            return render_template("changepass.html", NOTLOGGEDIN = "Error: Wrong username or password.")  
+            return render_template("changepass.html", ERROR = "Error: Wrong username or password.")  
 
 @app.route("/home", methods=["GET","POST"])
 def home():
