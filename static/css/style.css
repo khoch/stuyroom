@@ -1,3 +1,22 @@
+body {
+    background-color: #F0F0F0;
+    width:100%;
+}
+#outer {
+    width:80%;
+    margin: 0 auto;
+}
+
+#inner {
+    min-width:1000px;
+}
+
+#wrap {
+    padding-top:100px;
+    width:50%;
+    margin: 0 auto;
+}
+
 #calTitle, #calTitle a {
     text-align:center;
     color:black;
@@ -10,8 +29,8 @@
 
 .cal {
     float:left;
-    margin-top:5%;
     margin-right:5%;
+
 }
 
 .next{
@@ -64,6 +83,7 @@
     margin: 5% 5% 5% 5%;
     float: left;
     padding: 0;
+    font-size: 15px;
 }
 
 .unavailable ul {
@@ -79,3 +99,15 @@
     margin:0;
 }
 
+.available span, .unavailable span {
+    font-weight:bold;
+    font-size:medium;
+    padding-bottom:10px;
+}
+
+#lists {
+
+    min-width: 200px;
+    overflow: hidden;
+    display: inline-block;
+}
