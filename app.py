@@ -12,16 +12,18 @@ def cal():
 
 @application.route('/reserve', methods=['GET','POST'])
 def reserve():
+    room = ""
+    if request.method == 'GET':
+        room = request.args.get('rm')
     if request.method == 'POST':
         leadername = request.form['name']
         clubname = request.form['clubname']
         email = request.form['email']
-        room = request.args.get('rm')
         date = request.args.get('date')
         #stores info in database
         database.addReservation(room, date, clubname, leadername, email)
         return redirect(url_for('cal'))
-    return render_template("room.html")
+    return render_template("room.html", rm=room)
 
 
 @application.route('/test')

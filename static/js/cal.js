@@ -40,7 +40,9 @@ var fillCalendar = function fillCalendar(year, month){
 	    var datestring = new String();
 	    datestring = year + "-" + month + "-" + thisDay;
 	    //if not weekend
+	    $(this).off();
 	    if (!(index%7 == 0 || (index+1)%7 == 0)){	
+
 		$(this).on("click", function(e){
 		    $("#availrooms").empty();
 		    $("#unavailrooms").empty();	
@@ -119,7 +121,7 @@ var prevMonth = function(e){
 
 var availableRooms = function availableRooms(dstring){
     //returns list of available rooms
-    console.log("!" + dstring);
+    //console.log("!" + dstring);
     var rms;
     //using sync request because this data is basically needed for the site to serve its purpose
     $.ajax({
