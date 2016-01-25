@@ -2,9 +2,10 @@ import mysql.connector
 import datetime
 from operator import sub
 from itertools import imap
+from passlib.hash import pbkdf2_sha256
 from mysql.connector import errorcode
 
-tables = {'reservations':'CREATE TABLE reservations (roomNum INT(4), date DATE, clubName VARCHAR(64), clubLeader VARCHAR(64), email VARCHAR(64))', "rooms" : 'CREATE TABLE rooms (roomNum INT(4))', 'users': 'CREATE TABLE users (username VARCHAR(64), password VARCHAR(64), banned BOOLEAN)'}
+tables = {'reservations':'CREATE TABLE reservations (roomNum INT(4), date DATE, clubName VARCHAR(64), clubLeader VARCHAR(64), email VARCHAR(64))', "rooms" : 'CREATE TABLE rooms (roomNum INT(4))', 'users': 'CREATE TABLE users (username VARCHAR(64), password VARCHAR(256), banned BOOLEAN)'}
 try:
   cnx = mysql.connector.connect(user='nicholas', password='stuyroom', host='127.0.0.1')
   cnx.database = "stuyroom"
@@ -73,7 +74,6 @@ def getAllReservedRooms():
     cursor.close()
     return output
 
-
 def get(n):
     cursor = cnx.cursor(buffered=True)
     cursor.execute(n)
@@ -93,7 +93,7 @@ def getAll(key):
         for (roomNum, date, clubName, clubLeader, email) in cursor:
             print ("Room {} was reserved on {: %d %b %Y} by {} ({}) of {}".format(roomNum, date, clubLeader, email, clubName))
     if key == "users":
-        for (username, passwords) in cursor:
+        for (username, passwords, banned) in cursor:
             print ("User: {}".format(username))
     if key == "rooms":
         for (rooms) in cursor:
@@ -197,22 +197,25 @@ def addRoom(roomNum):
 
 def addUser(username, password):
     # Everything should be hashed by now
+    hashedPassword = hash(password)
+    print "Added user: " + hashedPassword
     if userExists(username):
-        return false
+        return False
     cursor = cnx.cursor(buffered=True)
-    cursor.execute('INSERT INTO users VALUES ( "{}", "{}", False);'.format(username, password))
+    cursor.execute('INSERT INTO users VALUES ( "{}", "{}", False);'.format(username, hashedPassword))
     cnx.commit()
     cursor.close()
-    return true
+    return True
 
 def checkUser(username, password):
     # returns 0 if user exists with correct password, 1 if the password is wrong and 2 if they do not exist
     cursor = cnx.cursor(buffered=True)
     if userExists(username):
-        cursor.execute('SELECT count(1) FROM users WHERE username = "{}" AND password ="{}"'.format(username, password))
+        cursor.execute('SELECT password FROM users WHERE username = "{}";'.format(username))
         result = cursor.fetchone()
+        
         cursor.close()
-        if (result[0] == 1):
+        if pbkdf2_sha256.verify(password, result[0]):
             return 0
         else:
             return 1
@@ -231,12 +234,23 @@ def userExists(username):
 
 def changePassword(username, newPassword):
     cursor = cnx.cursor(buffered=True)
-    updatePassword = 'UPDATE users SET password = "{}" WHERE username = "{}"'.format(newPassword, username)
+    updatePassword = 'UPDATE users SET password = "{}" WHERE username = "{}"'.format(hash(newPassword), username)
     cursor.execute(updatePassword)
     cursor.close()
     
     
+def getPassword(username):
+    cursor = cnx.cursor(buffered=True)
+    getPassword = 'SELECT password FROM users WHERE username= "{}"'.format(username)
+    cursor.execute(getPassword)
+    out = cursor.fetchall()
+    return out[0][0]
 
+def deleteUser(username):
+    cursor = cnx.cursor(buffered=True)
+    removeUser = 'DELETE FROM users WHERE username = "{}"'.format(username)
+    cursor.execute(removeUser)
+    cnx.commit()
 # <---------------------------- Misc ---------------------------->
 
 def importRooms(fileName):
@@ -250,7 +264,9 @@ def restrictRoom(year, month, day, numOfDays, roomNum):
         addReservation(roomNum, str(t), "SU", "SU", "StuyvesantStudentUnion2015@gmail.com")
         t = t + datetime.timedelta(days=1)
         print t
-        
+
+def hash(input):
+    return pbkdf2_sha256.encrypt(input, rounds=20000, salt_size=16)
 '''
 Stores room, club leader name, club name, email, date, (also adds room to taken list)
 
