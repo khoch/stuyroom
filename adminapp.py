@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, session, redirect, url_for
-import sqlite3
+from passlib.hash import pbkdf2_sha256
 import csv
 import database
 
 app = Flask(__name__)
+
 
 @app.route("/", methods=["GET","POST"])
 
@@ -16,8 +17,9 @@ def login():
     else:
         uname = request.form['user']
         passw = request.form['pass']
+        hashedPassword = pbkdf2_sha256.encrypt(passw, rounds=20000, salt_size=16)
         #button = request.form['button']
-	if database.checkUser(uname, passw) == 0:
+	if database.checkUser(uname, hashedPassword) == 0:
             session["loggedin"] = True
             session['user'] = uname
             return redirect(url_for("home"))
@@ -36,10 +38,12 @@ def changepass():
         newpassw1 = request.form['newpass1']
         newpassw2 = request.form['newpass2']
         #button = request.form['button']
-        if database.checkUser(uname, oldpassw) == 0:
+        oldPasswordHashed = pbkdf2_sha256.encrypt(oldpassw, rounds=20000, salt_size=16)
+        if database.checkUser(uname, oldPasswordHashed) == 0:
             if newpassw1 != newpassw2:
-                return render_template("changepass.html", ERROR = "Error: New passwords do not match.") 
-            database.changePassword(uname, newpassw1)
+                return render_template("changepass.html", ERROR = "Error: New passwords do not match.")
+            newPasswordHashed = pbkdf2_sha256.encrypt(newpassw1, rounds=20000, salt_size=16)
+            database.changePassword(uname, newPasswordHashed)
             return redirect(url_for("login"))
         else:
             return render_template("changepass.html", ERROR = "Error: Wrong username or password.")
@@ -67,8 +71,10 @@ def signup():
         else: 
             uname = request.form['user']
             passw = request.form['pass']
-            #button = request.form['button']			
-            if database.addUser(uname, passw):
+            #button = request.form['button']
+            usernameHashed = pbkdf2_sha256.encrypt(uname, rounds=20000, salt_size=16)
+            passwordHashed = pbkdf2_sha256.encrypt(passw, rounds=20000, salt_size=16)			
+            if database.addUser(usernameHashed, passwordHashed):
                 return redirect(url_for("login"))
             else:
                 return render_template("signup.html", NOTLOGGEDIN = "Error: Username already exists")
