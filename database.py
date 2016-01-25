@@ -197,10 +197,13 @@ def addRoom(roomNum):
 
 def addUser(username, password):
     # Everything should be hashed by now
+    if userExists(username):
+        return false
     cursor = cnx.cursor(buffered=True)
-    cursor.execute('INSERT INTO users VALUES ( "{}", "{}");'.format(username, password))
+    cursor.execute('INSERT INTO users VALUES ( "{}", "{}", False);'.format(username, password))
     cnx.commit()
     cursor.close()
+    return true
 
 def checkUser(username, password):
     # returns 0 if user exists with correct password, 1 if the password is wrong and 2 if they do not exist
@@ -226,6 +229,13 @@ def userExists(username):
         return False
     return True
 
+def changePassword(username, newPassword):
+    cursor = cnx.cursor(buffered=True)
+    updatePassword = 'UPDATE users SET password = "{}" WHERE username = "{}"'.format(newPassword, username)
+    cursor.execute(updatePassword)
+    cursor.close()
+    
+    
 
 # <---------------------------- Misc ---------------------------->
 

@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 import sqlite3
 import csv
-from account_utils import Login, ChangePass
+import database
 
 app = Flask(__name__)
 
@@ -17,7 +17,7 @@ def login():
         uname = request.form['user']
         passw = request.form['pass']
         #button = request.form['button']
-        if Login(uname, passw):
+	if database.checkUser(uname, passw) == 0:
             session["loggedin"] = True
             session['user'] = uname
             return redirect(url_for("home"))
@@ -36,13 +36,14 @@ def changepass():
         newpassw1 = request.form['newpass1']
         newpassw2 = request.form['newpass2']
         #button = request.form['button']
-        if Login(uname, oldpassw):
+        if database.checkUser(uname, oldpassw) == 0:
             if newpassw1 != newpassw2:
                 return render_template("changepass.html", ERROR = "Error: New passwords do not match.") 
-            ChangePass(uname, newpassw1)
+            database.changePassword(uname, newpassw1)
             return redirect(url_for("login"))
         else:
-            return render_template("changepass.html", ERROR = "Error: Wrong username or password.")  
+            return render_template("changepass.html", ERROR = "Error: Wrong username or password.")
+    
 
 @app.route("/home", methods=["GET","POST"])
 def home():
@@ -51,6 +52,7 @@ def home():
 @app.route("/logout")
 def logout():
     session["loggedin"] = False
+    session['uname'] = ""
     return redirect(url_for("home"))
 
 @app.route("/signup", methods=['GET', 'POST'])
@@ -66,7 +68,7 @@ def signup():
             uname = request.form['user']
             passw = request.form['pass']
             #button = request.form['button']			
-            if Register.Register(uname, passw):
+            if database.addUser(uname, passw):
                 return redirect(url_for("login"))
             else:
                 return render_template("signup.html", NOTLOGGEDIN = "Error: Username already exists")
@@ -83,3 +85,4 @@ if __name__== "__main__":
     app.debug = True
     app.secret_key = "Password"
     app.run(host='0.0.0.0',port=8000)
+    
