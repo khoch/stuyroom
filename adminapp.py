@@ -22,7 +22,7 @@ def login():
 	if database.checkUser(uname, hashedPassword) == 0:
             session["loggedin"] = True
             session['user'] = uname
-            return redirect(url_for("home"))
+            return redirect(url_for("adminhome"))
         else:
             return render_template("login.html", NOTLOGGEDIN = "Error: Wrong username or password.")  
 
@@ -49,25 +49,27 @@ def changepass():
             return render_template("changepass.html", ERROR = "Error: Wrong username or password.")
     
 
-@app.route("/home", methods=["GET","POST"])
-def home():
-	return render_template("home.html")
+@app.route("/adminhome", methods=["GET","POST"])
+def adminhome():
+	return render_template("adminhome.html")
 
 @app.route("/logout")
 def logout():
     session["loggedin"] = False
     session['uname'] = ""
-    return redirect(url_for("home"))
+    return redirect(url_for("adminhome"))
 
 @app.route("/signup", methods=['GET', 'POST'])
 def signup():
+    if not'loggedin' in session or not session["loggedin"]:
+        return render_template("adminhome.html")
     if request.method=="GET":
         return render_template("signup.html")
     else:
         if request.form['pass'] != request.form['confirmpass']:
-            return render_template("signup.html", NOTLOGGEDIN = "Error: 'Password' and 'Confirm Password' do not match.")
+            return render_template("signup.html", ERROR = "Error: 'Password' and 'Confirm Password' do not match.")
         elif len(request.form['user']) < 4 or len(request.form['pass']) < 8:
-            return render_template("signup.html", NOTLOGGEDIN = "Error: 'Username' must be at least 4 characters and 'Password' must be at least 8 characters.")
+            return render_template("signup.html", ERROR = "Error: 'Username' must be at least 4 characters and 'Password' must be at least 8 characters.")
         else: 
             uname = request.form['user']
             passw = request.form['pass']
@@ -77,7 +79,7 @@ def signup():
             if database.addUser(usernameHashed, passwordHashed):
                 return redirect(url_for("login"))
             else:
-                return render_template("signup.html", NOTLOGGEDIN = "Error: Username already exists")
+                return render_template("signup.html", ERROR = "Error: Username already exists")
 
 @app.route("/myaccount")
 def myaccount():
