@@ -22,7 +22,7 @@ def login():
 	if database.checkUser(uname, hashedPassword) == 0:
             session["loggedin"] = True
             session['user'] = uname
-            return redirect(url_for("home"))
+            return redirect(url_for("adminhome"))
         else:
             return render_template("login.html", NOTLOGGEDIN = "Error: Wrong username or password.")  
 
@@ -49,18 +49,20 @@ def changepass():
             return render_template("changepass.html", ERROR = "Error: Wrong username or password.")
     
 
-@app.route("/home", methods=["GET","POST"])
-def home():
-	return render_template("home.html")
+@app.route("/adminhome", methods=["GET","POST"])
+def adminhome():
+	return render_template("adminhome.html")
 
 @app.route("/logout")
 def logout():
     session["loggedin"] = False
     session['uname'] = ""
-    return redirect(url_for("home"))
+    return redirect(url_for("adminhome"))
 
 @app.route("/signup", methods=['GET', 'POST'])
 def signup():
+    if not'loggedin' in session or not session["loggedin"]:
+        return render_template("adminhome.html")
     if request.method=="GET":
         return render_template("signup.html")
     else:
