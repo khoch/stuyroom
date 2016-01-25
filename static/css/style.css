@@ -2,14 +2,7 @@ body {
     background-color: #F0F0F0;
     width:100%;
 }
-#outer {
-    width:80%;
-    margin: 0 auto;
-}
 
-#inner {
-    min-width:1000px;
-}
 
 #wrap {
     padding-top:100px;
