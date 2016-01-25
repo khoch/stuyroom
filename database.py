@@ -8,7 +8,7 @@ from passlib.hash import pbkdf2_sha256
 
 tables = {'reservations':'CREATE TABLE reservations (roomNum INT(4), date DATE, clubName VARCHAR(64), clubLeader VARCHAR(64), email VARCHAR(64))', "rooms" : 'CREATE TABLE rooms (roomNum INT(4))', 'users': 'CREATE TABLE users (username VARCHAR(64), password VARCHAR(256), banned BOOLEAN)'}
 try:
-  cnx = mysql.connector.connect(user='nicholas', password='stuyroom', host='107.170.107.124')
+  cnx = mysql.connector.connect(user='nicholas', password='stuyroom', host='127.0.0.1')
   cnx.database = "stuyroom"
 except mysql.connector.Error as err:
   if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -54,13 +54,14 @@ def createTables():
 def reloadTables():
     cursor = cnx.cursor(buffered=True)
     print "Dropping reservations...."
-    cursor.execute("DROP TABLE reservations")
+    cursor.execute("DROP TABLE reservations;")
     print "Dropping rooms....."
-    cursor.execute("DROP TABLE rooms")
+    cursor.execute("DROP TABLE rooms;")
     print "Dropping users...."
-    cursor.execute("DROP TABLE users")
+    cursor.execute("DROP TABLE users;")
     print "Creating tables...."
     createTables()
+    importRooms("rooms.txt")
     print "Done"
 # <-------------- Testing -------------->
 
