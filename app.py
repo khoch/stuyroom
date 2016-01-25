@@ -10,8 +10,6 @@ def cal():
     #check if user is logged in
     if "loggedin" not in session:
         session["loggedin"] = False;
-    #elif session["loggedin"] == True:
-     #   return render_template("cal.html", logged_in = loggedin)
     return render_template("cal.html")
 
 @application.route('/reserve', methods=['GET','POST'])
@@ -19,11 +17,13 @@ def reserve():
     room = ""
     if request.method == 'GET':
         room = request.args.get('rm')
+        print room
     if request.method == 'POST':
         leadername = request.form['name']
         clubname = request.form['clubname']
         email = request.form['email']
         date = request.args.get('date')
+        room = request.args.get('rm')
         #stores info in database
         database.addReservation(room, date, clubname, leadername, email)
         return redirect(url_for('cal'))
