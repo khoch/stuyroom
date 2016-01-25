@@ -101,7 +101,12 @@
 	    <span></span>
 	    <ul id="unavailrooms"></ul>
 	  </div>
-	</div>
+	  </div>
+	  {% if session.loggedin %}
+	  <a href="/logout" style="float:left"> Logout </a>
+	  {% else %}
+	  <a href="/login" style="float:left"> Admin Tools </a>
+	  {% endif %}
       </center>
     </div>
     </div>
