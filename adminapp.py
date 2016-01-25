@@ -67,9 +67,9 @@ def signup():
         return render_template("signup.html")
     else:
         if request.form['pass'] != request.form['confirmpass']:
-            return render_template("signup.html", NOTLOGGEDIN = "Error: 'Password' and 'Confirm Password' do not match.")
+            return render_template("signup.html", ERROR = "Error: 'Password' and 'Confirm Password' do not match.")
         elif len(request.form['user']) < 4 or len(request.form['pass']) < 8:
-            return render_template("signup.html", NOTLOGGEDIN = "Error: 'Username' must be at least 4 characters and 'Password' must be at least 8 characters.")
+            return render_template("signup.html", ERROR = "Error: 'Username' must be at least 4 characters and 'Password' must be at least 8 characters.")
         else: 
             uname = request.form['user']
             passw = request.form['pass']
@@ -79,7 +79,7 @@ def signup():
             if database.addUser(usernameHashed, passwordHashed):
                 return redirect(url_for("login"))
             else:
-                return render_template("signup.html", NOTLOGGEDIN = "Error: Username already exists")
+                return render_template("signup.html", ERROR = "Error: Username already exists")
 
 @app.route("/myaccount")
 def myaccount():
