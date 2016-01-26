@@ -1,6 +1,5 @@
 # StuyRoom
 A room reservation system for Stuy.
-Club/Pub Room Sign Up Website
 
 **Link**: http://stuyroom.nicholasyang.com/
 
