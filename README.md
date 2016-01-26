@@ -3,7 +3,8 @@ A room reservation system for Stuy.
 Club/Pub Room Sign Up Website
 
 **Link**: http://stuyroom.nicholasyang.com/
-**Demo video**: http://stuyroom.nicholasyang.com/
+
+**Demo video**:  http://youtube.com/watch?v=VZfePD8VG6E
 
 
 ##Project Description
