@@ -1,18 +1,26 @@
-# stuyroom
-Stuy room reservation system
+# StuyRoom
+A room reservation system for Stuy.
 Club/Pub Room Sign Up Website
 
 **Link**: http://stuyroom.nicholasyang.com/
+**Demo video**: http://stuyroom.nicholasyang.com/
+
 
 ##Project Description
 
 ###Summary
-An easy user friendly way to reserve rooms for club/pub activities. Features a calendar with available dates.
-Upon clicking on the calendar a list of avaible rooms and unavaible rooms appears. The avaible rooms then link to a form for reserving it. There is also an administratpr panel which allows admins to log in and moniter who is reserving their rooms. 
+A simple, user friendly way to reserve rooms for club/pub activities. Features a calendar with available dates.
+Upon clicking on the calendar, a list of available rooms and unavailable rooms appears. The available rooms then link to a form for reserving them. There is also an administrator panel (still under development) which allows admins to log in and manually delete room reservations if ever necessary. Admins can also block rooms from being reserved for any period of time if another school organization (such as ARISTA) will be using them.
+
+###TODO
+* fix a few bugs that affect how available rooms are displayed
+* secure the backend to ensure that nobody can ever reserve the same room twice on the same day
+* finish the admin panel and optimize it for ease of used
+* Deploy on SU website!
 
 ###Tools Used
 
-* Developed in python and jquery using MySQL for datastorage
+* Developed in python and jquery using MySQL for data storage
 * Flask
 * MySQL
 	* Python MySQL connector
