@@ -61,12 +61,17 @@ var fillCalendar = function fillCalendar(year, month){
 		$(this).toggleClass("off",true);
 	    } else if (month < date.getMonth() && year == date.getFullYear()){
 		$(this).toggleClass("off",true);
+		//gets rid of months too far in future
+	    } else if (month > date.getMonth() + 2) {
+		$(this).toggleClass("off",true);
+		//days that have passed in the current month 
+	    } else if (month == date.getMonth() && thisDay < date.getDate()){
+		$(this).toggleClass("off",true);
 	    } else if (!(index%7 == 0 || (index+1)%7 == 0)){
     		$(this).toggleClass("off",false);
 		$(this).on("click", function(e){
-
 		    calEvent(datestring);
-		});
+		});		    
     	    } else {
 		$(this).toggleClass("off",false);
 	    }
@@ -77,15 +82,23 @@ var fillCalendar = function fillCalendar(year, month){
 }
 
 var date = new Date();
+currrentD = date.getDay();
 currentM = date.getMonth();
 currentY = date.getFullYear();
 fillCalendar(currentY, currentM);
 
+
 var calEvent = function calEvent(dateString){
     var rooms = availableRooms(dateString);
     for (var i = 0; i < rooms.length;i++){
-	$("#availrooms").append('<li><a href="reserve?rm=' + rooms[i]+ '&date=' + dateString+'">'
-				+ rooms[i]  + '</a></li>');
+	room = rooms[i];
+	$("#availrooms").append('<li id="'+ room + '"><a href="#">' + room + '</a></li>');
+	$("#room").off();
+	$("#" + room).on('click', 'a', function(e){
+	    $('input[name="rm"]').val(room);
+	    $('input[name="date"]').val(dateString);
+	    $("#reserve").submit();
+	});
     }
     $(".available").find("span").text("Available");
     
