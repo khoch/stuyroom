@@ -5,29 +5,29 @@ import database
 application = Flask(__name__)
 
 @application.route('/')
-@application.route('/cal')
+@application.route('/cal', methods=['GET','POST'])
 def cal():
     #check if user is logged in
     if "loggedin" not in session:
-        session["loggedin"] = False;
+        session["loggedin"] = False
     return render_template("cal.html")
 
 @application.route('/reserve', methods=['GET','POST'])
+@application.route('/rsrv', methods=['GET','POST'])
 def reserve():
-    room = ""
-    if request.method == 'GET':
-        room = request.args.get('rm')
-        print room
     if request.method == 'POST':
-        leadername = request.form['name']
-        clubname = request.form['clubname']
-        email = request.form['email']
-        date = request.args.get('date')
-        room = request.args.get('rm')
-        #stores info in database
-        database.addReservation(room, date, clubname, leadername, email)
-        return redirect(url_for('cal'))
-    return render_template("room.html", rm=room)
+        room = request.form['rm']
+        date = request.form['date']
+        if request.path == '/rsrv':
+            leadername = request.form['name']
+            clubname = request.form['clubname']
+            email = request.form['email']
+            room = request.form['rm']
+            date = request.form['date']
+            #print leadername + " " + clubname + " " + email + " " + room + " " + date
+            database.addReservation(room, date, clubname, leadername, email)
+            return redirect(url_for('cal'))
+    return render_template("room.html", rm=room, date=date)
 
 
 @application.route('/test')
@@ -37,7 +37,8 @@ def test():
 @application.route('/taken')
 def taken():
     if request.method == 'GET':
-        date = request.args.get("date");
+        date = request.args.get("date")
+        #data = [[123,"123"],[123,"123"],[123,"123"]]
         data = database.getTakenRooms(date)
     return json.dumps(data)
 
@@ -45,7 +46,8 @@ def taken():
 def available():
     data = []
     if request.method == 'GET':
-        date = request.args.get("date");
+        date = request.args.get("date")
+        #data = [123,456,678,910]
         data = database.getAvailableRooms(date)
     return json.dumps(data)
 
@@ -127,6 +129,4 @@ def myaccount():
 
 application.secret_key = "k|5D5PH~21x1.zLg1r.Gj?9v"
 if __name__ == "__main__":
-    
-
     application.run('0.0.0.0',port=8001)

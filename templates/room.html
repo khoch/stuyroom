@@ -11,13 +11,15 @@
 	  <div class="text-center">
 	    <h3>Room {{rm}}</h3>
 	    <center>
-		<form method="POST">
+		<form action ="/rsrv" method="POST">
 			<input type="text" name="name" placeholder="club leader name" required>
 			<br>
 			<input type="text" name="clubname" placeholder="club name" required>
 			<br>
 			<input type="text" name="email" placeholder="email" required>
 			<br>
+			<input type="hidden" name="rm" value={{rm}}>
+			<input type="hidden" name="date" value={{date}}>
 			<input type="submit" name="submit">&#09;<a href="/cal">Go Back</a>
 		</form>
 	    </center>
