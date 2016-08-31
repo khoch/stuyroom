@@ -82,18 +82,20 @@ currentY = date.getFullYear();
 fillCalendar(currentY, currentM);
 
 var calEvent = function calEvent(dateString){
-    var rooms = availableRooms(dateString);
-    for (var i = 0; i < rooms.length;i++){
-	$("#availrooms").append('<li><a href="reserve?rm=' + rooms[i]+ '&date=' + dateString+'">'
-				+ rooms[i]  + '</a></li>');
-    }
-    $(".available").find("span").text("Available");
+    availableRooms(dateString, function(rooms){
+	for (var i = 0; i < rooms.length;i++){
+	    $("#availrooms").append('<li><a href="reserve?rm=' + rooms[i]+ '&date=' + dateString+'">'
+				    + rooms[i]  + '</a></li>');
+	}
+	$(".available").find("span").text("Available");
+    });
     
-    var takenrooms = unavailableRooms(dateString);
-    for (var i = 0; i < takenrooms.length; i++){
-	$("#unavailrooms").append('<li>' + takenrooms[i][0] + ' : ' + takenrooms[i][1] + '</li>');
-    }
-    $(".unavailable").find("span").text("Unavailable");
+    unavailableRooms(dateString, function(takenrooms){
+	for (var i = 0; i < takenrooms.length; i++){
+	    $("#unavailrooms").append('<li>' + takenrooms[i][0] + ' : ' + takenrooms[i][1] + '</li>');
+	}
+	$(".unavailable").find("span").text("Unavailable");
+    });
 }
 
 var nextMonth = function(e){
@@ -119,53 +121,46 @@ var prevMonth = function(e){
 /****************************Things that we need from backend***********************************************/
 
 
-var availableRooms = function availableRooms(dstring){
+function availableRooms(dstring,callback){
     //returns list of available rooms
     //console.log("!" + dstring);
-    var rms;
-    //using sync request because this data is basically needed for the site to serve its purpose
     $.ajax({
 	url: "/available",
 	type: 'GET',
 	dataType: 'json',
-	async: false,
 	data: {date: dstring},
 	success: function(d){
-	    rms = d;
+	    console.log(d);
+	    callback(d);
 	},
 	error: function(error){
+	    console.log("geh");
 	    console.log(error);
 	}
     });
-    //rms = [123,23,424,242,25];
-    return rms;
 
 }
 
 
 
 
-var unavailableRooms = function unavailableRooms(dstring){
+function unavailableRooms(dstring,callback){
     //returns 2d list of unavailable rooms + club using it
 
-    var takenrms;
-    //using sync request because too lazy not to
     $.ajax({
 	url: "/taken",
 	type: 'GET',
 	dataType: 'json',
-	async: false,
 	data: {date: dstring},
 	success: function(d){
-	    takenrms = d;
+	    console.log(d);
+	    callback(d);
 	},
 	error: function(error){
 	    console.log(error);
 	}
 
     });
-    //takenrms = [[214,"214"],[214,"214"],[214,"214"],[214,"214"]]
-    return takenrms;
 
 }
 
